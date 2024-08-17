@@ -3,7 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - CheckpointSound
+  - Enemy
+  - JumpSound
+  - Checkpoint 2
+  - Checkpoint 1
+  - End
+  - DeathSound
+  - Menu
+  - Checkpoint 3
   layers:
   - Default
   - TransparentFX
@@ -11,7 +20,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Post Processing
   - 
   - 
   - 

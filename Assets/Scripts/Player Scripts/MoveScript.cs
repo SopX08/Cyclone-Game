@@ -32,18 +32,33 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
 
     public Transform respawnPoint;
     public Transform respawnPoint2;
+    public Transform respawnPoint3;
+    public Transform respawnPoint4;
+    public Transform respawnPoint5;
 
     public SpriteRenderer flagBlue;
     public SpriteRenderer flagBlue2;
-    private int flagNum = 1;
+    public SpriteRenderer flagBlue3;
+    public SpriteRenderer flagBlue4;
+    public SpriteRenderer flagBlue5;
+    private bool flag1Blue;
+    private bool flag2Blue;
+    private bool flag3Blue;
+    private bool flag4Blue;
+    private bool flag5Blue;
 
     public GameObject Player1WinScreen;
-    public GameObject Player2WinScreen;
+
+    public GameObject Prompt1;
+    public GameObject Prompt2;
+    public GameObject Prompt3;
+    public GameObject Prompt4;
+    public GameObject Prompt5;
 
     public AudioSource jumpSoundEffect;
     public AudioSource checkpointSoundEffect;
 
-    private bool zeroVelocity = false;
+    public bool zeroVelocity = false;
 
     public MainMenu mainMenu;
 
@@ -66,92 +81,121 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
         checkpointSoundEffect = GameObject.FindGameObjectWithTag("CheckpointSound").GetComponent<AudioSource>();
         //mainMenu = GameObject.Find("MainMenu").GetComponent<MainMenu>
     }
-
+    
     // Update is called once per frame
-    void Update() {
-        horizontal = Input.GetAxisRaw("Horizontal"); //returns -1, 0, or 1 depending on the direction were moving
-
-        if (horizontal == 0) { // if player not moving
-            animRun.SetBool("isRunning", false);
-        }   else {
-            animRun.SetBool("isRunning", true);
-        }
-
-        WallSlide(); //all functions to be run continously
-        WallJump();
-
-        if (!isWallJumping) {
-            Flip();
-        }
-
-        // Allows player to jump 0.2s after leaving the ground to give some leniency (called coyote time for some reason)
-        if (IsGrounded()) //coyote time section
+    void Update()
+    {
+        if (zeroVelocity)
         {
-            coyoteTimeCounter = coyoteTime;
-            animJump.SetBool("isJumping", false);
-        }
-        else {
-            coyoteTimeCounter -= Time.deltaTime;
-            animJump.SetBool("isJumping", true);
-        }
+            rb.velocity = Vector2.zero;
+        }   else
+        // only do anything if game not "paused" during
+        // (!zeroVelocity)
+        {
+            horizontal = Input.GetAxisRaw("Horizontal"); //returns -1, 0, or 1 depending on the direction were moving
 
-        if (Input.GetKeyDown(KeyCode.W)) //jump buffer section
-        {
-            jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            jumpBufferCounter -= Time.deltaTime;
-        }
-
-        if (IsGrounded() && !Input.GetKey(KeyCode.W)) //double jump section
-        {
-            doubleJump = false;
-        }
-        if (IsWalled() && !Input.GetKey(KeyCode.W)) {
-            doubleJump = false;
-        }
-        // if (!IsGrounded()) { // so when you walk off a ledge you can still double jump
-        //     doubleJump = true;
-        // }
-        if (Input.GetKeyDown(KeyCode.W)) //if player presses jump
-        {
-            if ((coyoteTimeCounter>0f && !doubleJump) && jumpBufferCounter > 0f) {
-                jumpSoundEffect.Play(); // play jump sound affect
-                rb.velocity = Vector2.up * jumpPower; // move velocity of player upward
-                doubleJump = !doubleJump; // set double jump-able to false
-                jumpBufferCounter = 0f; 
+            if (horizontal == 0)
+            { // if player not moving
+                animRun.SetBool("isRunning", false);
             }
-            if (!IsGrounded() && doubleJump && jumpBufferCounter > 0f) {
-                rb.velocity = Vector2.up * jumpPower; // jump
-                jumpSoundEffect.Play();
+            else
+            {
+                animRun.SetBool("isRunning", true);
+            }
+
+            WallSlide(); //all functions to be run continously
+            WallJump();
+
+            if (!isWallJumping)
+            {
+                Flip();
+            }
+
+            // Allows player to jump 0.2s after leaving the ground to give some leniency (called coyote time for some reason)
+            if (IsGrounded()) //coyote time section
+            {
+                coyoteTimeCounter = coyoteTime;
+                animJump.SetBool("isJumping", false);
+            }
+            else
+            {
+                coyoteTimeCounter -= Time.deltaTime;
+                animJump.SetBool("isJumping", true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.W)) //jump buffer section
+            {
+                jumpBufferCounter = jumpBufferTime;
+            }
+            else
+            {
+                jumpBufferCounter -= Time.deltaTime;
+            }
+
+            if (IsGrounded() && !Input.GetKey(KeyCode.W)) //double jump section
+            {
                 doubleJump = false;
-                jumpBufferCounter = 0f;
             }
-        }
+            if (IsWalled() && !Input.GetKey(KeyCode.W))
+            {
+                doubleJump = false;
+            }
+            // if (!IsGrounded()) { // so when you walk off a ledge you can still double jump
+            //     doubleJump = true;
+            // }
+            if (Input.GetKeyDown(KeyCode.W)) //if player presses jump
+            {
+                if ((coyoteTimeCounter > 0f && !doubleJump) && jumpBufferCounter > 0f)
+                {
+                    jumpSoundEffect.Play(); // play jump sound affect
+                    rb.velocity = Vector2.up * jumpPower; // move velocity of player upward
+                    doubleJump = !doubleJump; // set double jump-able to false
+                    jumpBufferCounter = 0f;
+                }
+                if (!IsGrounded() && doubleJump && jumpBufferCounter > 0f)
+                {
+                    rb.velocity = Vector2.up * jumpPower; // jump
+                    jumpSoundEffect.Play();
+                    doubleJump = false;
+                    jumpBufferCounter = 0f;
+                }
+            }
 
-        // The longer you hold the jump button, the higher you go (up to a point)
-        if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f) {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            coyoteTimeCounter = 0f;
-        }
+            // The longer you hold the jump button, the higher you go (up to a point)
+            if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                coyoteTimeCounter = 0f;
+            }
 
-        if (Player1WinScreen.activeSelf && Player2WinScreen.activeSelf) //If both players win, restart the game
-        {
-            //LoadNextLevel();
-        }
+            if (Player1WinScreen.activeSelf) //If both players win, restart the game
+            {
+                // LoadNextLevel();
+            }
 
-        if (zeroVelocity) {
-            rb.velocity = new Vector2(0, 0);
+            if (zeroVelocity)
+            {
+                rb.velocity = new Vector2(0, 0);
+            }
         }
     }
 
     private void FixedUpdate()
     {
-        if (!isWallJumping)
+        if (zeroVelocity)
         {
-            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
         }
+        else
+        {
+            
+            if (!isWallJumping)
+            {
+                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+            }
+        }
+        
     }
 
     private bool IsGrounded()
@@ -237,37 +281,50 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision) //Detect checkpoints
+    // Detect stuff that player hits (checkpoints, end)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.tag == "Checkpoint 1")
         {
             checkpointSoundEffect.Play();
             Debug.Log("Player 1 touched Checkpoint 1");
             respawnPoint.position = transform.position;
-            if (flagNum == 1)
-            {
-                flagBlue.color = Color.blue;
-                flagNum = 2;
-            }
-            else
-            {
-                flagNum = 2;
-            }
+            flagBlue.color = Color.blue;
+            zeroVelocity = true;
+            Prompt1.SetActive(true);
         }
         else if (collision.tag == "Checkpoint 2") {
             checkpointSoundEffect.Play();
             Debug.Log("Player 1 touched Checkpoint 2");
             respawnPoint.position = transform.position;
-            if (flagNum == 2)
-            {
-                flagBlue2.color = Color.blue;
-                flagNum = 3;
-            }
-            else 
-            {
-                flagNum = 3;
-            }
+            zeroVelocity = true;
+            Prompt1.SetActive(true);
         }
+        else if (collision.tag == "Checkpoint 3")
+        {
+            checkpointSoundEffect.Play();
+            Debug.Log("Player 1 touched Checkpoint 3");
+            respawnPoint.position = transform.position;
+            zeroVelocity = true;
+            Prompt1.SetActive(true);
+        }   else if (collision.tag == "Checkpoint 4")
+        {
+            checkpointSoundEffect.Play();
+            Debug.Log("Player touched Checkpoint 4");
+            respawnPoint.position = transform.position;
+            flagBlue4.color = Color.blue;
+            zeroVelocity = true;
+            Prompt1.SetActive(true);
+        }   else if (collision.tag=="Checkpoint 5")
+        {
+            checkpointSoundEffect.Play();
+            Debug.Log("Player touched Checkpoint 5");
+            respawnPoint.position = transform.position;
+            flagBlue5.color = Color.blue;
+            zeroVelocity = true;
+            Prompt1.SetActive(true);
+        }
+
         if (collision.tag == "End")
         {
             Player1WinScreen.SetActive(true);
