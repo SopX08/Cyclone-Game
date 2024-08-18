@@ -11,6 +11,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private AudioSource hitSoundEffect;
     public UnityEvent OnHit;
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,9 +32,10 @@ public class PlayerHealth : MonoBehaviour
         hitSoundEffect = GameObject.FindGameObjectWithTag("Player").GetComponent<AudioSource>();
         hitSoundEffect.Play();
         damageTaken += damage;
-        if (damageTaken > 30) //Cap at 30 damage taken
+        if (damageTaken > 30) //Cap at 30 damage taken (changed to death)
         {
-            damageTaken = 30;
+            LevelManager.instance.Respawn();
+            damageTaken = 0;
         }
         Debug.Log("Player 1 Damage Taken");
     }

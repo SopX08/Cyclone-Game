@@ -17,6 +17,7 @@ public class PlayerDeath : MonoBehaviour
         {
             LevelManager.instance.Respawn();
             script.damageTaken = 0;
+            Debug.Log("Player took damage from enemy");
         }
     }
 }

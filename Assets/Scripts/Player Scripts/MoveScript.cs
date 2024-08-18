@@ -7,7 +7,7 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
 {
 
     private float horizontal;
-    public int speed;
+    public float speed;
     public int jumpPower;
     private bool isFacingRight = true;
 
@@ -41,11 +41,11 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
     public SpriteRenderer flagBlue3;
     public SpriteRenderer flagBlue4;
     public SpriteRenderer flagBlue5;
-    private bool flag1Blue;
-    private bool flag2Blue;
-    private bool flag3Blue;
-    private bool flag4Blue;
-    private bool flag5Blue;
+    private bool flag1AlreadyActivated = false;
+    private bool flag2AlreadyActivated = false;
+    private bool flag3AlreadyActivated = false;
+    private bool flag4AlreadyActivated = false;
+    private bool flag5AlreadyActivated = false;
 
     public GameObject Player1WinScreen;
 
@@ -71,12 +71,14 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
 
     private Animator animRun;
     private Animator animJump;
+    private Animator animCramp;
 
     // Start is called before the first frame update
     void Start()
     {
         animRun = GetComponent<Animator>();
         animJump = GetComponent<Animator>();
+        animCramp = GetComponent<Animator>();
         jumpSoundEffect = GameObject.FindGameObjectWithTag("JumpSound").GetComponent<AudioSource>();
         checkpointSoundEffect = GameObject.FindGameObjectWithTag("CheckpointSound").GetComponent<AudioSource>();
         //mainMenu = GameObject.Find("MainMenu").GetComponent<MainMenu>
@@ -185,7 +187,8 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
         if (zeroVelocity)
         {
             rb.velocity = Vector2.zero;
-            rb.angularVelocity = 0f;
+            rb.angularVelocity = 0f; //Stop rotation
+            rb.rotation = 0f; // Ensure the rotation is reset
         }
         else
         {
@@ -286,43 +289,70 @@ public class MoveScript : MonoBehaviour //This script doesnt just contain move e
     {
         if (collision.tag == "Checkpoint 1")
         {
-            checkpointSoundEffect.Play();
-            Debug.Log("Player 1 touched Checkpoint 1");
-            respawnPoint.position = transform.position;
-            flagBlue.color = Color.blue;
-            zeroVelocity = true;
-            Prompt1.SetActive(true);
+            // only if not activated already
+            if (!flag1AlreadyActivated)
+            {
+                checkpointSoundEffect.Play();
+                Debug.Log("Player 1 touched Checkpoint 1");
+                respawnPoint.position = transform.position;
+                flagBlue.color = Color.blue;
+                zeroVelocity = true;
+                Prompt1.SetActive(true);
+                flag1AlreadyActivated = true;
+            }
+
         }
         else if (collision.tag == "Checkpoint 2") {
-            checkpointSoundEffect.Play();
-            Debug.Log("Player 1 touched Checkpoint 2");
-            respawnPoint.position = transform.position;
-            zeroVelocity = true;
-            Prompt1.SetActive(true);
+            if (!flag2AlreadyActivated)
+            {
+                checkpointSoundEffect.Play();
+                Debug.Log("Player 1 touched Checkpoint 2");
+                respawnPoint.position = transform.position;
+                flagBlue2.color = Color.blue;
+                zeroVelocity = true;
+                Prompt2.SetActive(true);
+                flag2AlreadyActivated = true;
+            }
+            
         }
         else if (collision.tag == "Checkpoint 3")
         {
-            checkpointSoundEffect.Play();
-            Debug.Log("Player 1 touched Checkpoint 3");
-            respawnPoint.position = transform.position;
-            zeroVelocity = true;
-            Prompt1.SetActive(true);
+            if (!flag3AlreadyActivated)
+            {
+                checkpointSoundEffect.Play();
+                Debug.Log("Player 1 touched Checkpoint 3");
+                respawnPoint.position = transform.position;
+                flagBlue3.color = Color.blue;
+                zeroVelocity = true;
+                Prompt3.SetActive(true);
+                flag3AlreadyActivated = true;
+            }
         }   else if (collision.tag == "Checkpoint 4")
         {
-            checkpointSoundEffect.Play();
-            Debug.Log("Player touched Checkpoint 4");
-            respawnPoint.position = transform.position;
-            flagBlue4.color = Color.blue;
-            zeroVelocity = true;
-            Prompt1.SetActive(true);
+            if (!flag4AlreadyActivated)
+            {
+                checkpointSoundEffect.Play();
+                Debug.Log("Player touched Checkpoint 4");
+                respawnPoint.position = transform.position;
+                flagBlue4.color = Color.blue;
+                zeroVelocity = true;
+                Prompt3.SetActive(true);
+                flag4AlreadyActivated = true;
+            }
+            
         }   else if (collision.tag=="Checkpoint 5")
         {
-            checkpointSoundEffect.Play();
-            Debug.Log("Player touched Checkpoint 5");
-            respawnPoint.position = transform.position;
-            flagBlue5.color = Color.blue;
-            zeroVelocity = true;
-            Prompt1.SetActive(true);
+            if (!flag5AlreadyActivated)
+            {
+                checkpointSoundEffect.Play();
+                Debug.Log("Player touched Checkpoint 5");
+                respawnPoint.position = transform.position;
+                flagBlue5.color = Color.blue;
+                zeroVelocity = true;
+                Prompt1.SetActive(true);
+                flag5AlreadyActivated = true;
+            }
+            
         }
 
         if (collision.tag == "End")

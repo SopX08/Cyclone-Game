@@ -8,17 +8,15 @@ public class PlayerAttack : MonoBehaviour
     public float startTimeBtwAttack;
 
     public Transform attackPos;
-    public LayerMask whatIsEnemies;
     public float attackRange;
     public int damage;
     public Animator playerAnim;
     public Rigidbody2D player2rb;
     public Transform player2;
-    public Player2Health script;
 
     void Start()
     {
-        script = GameObject.Find("Player2").GetComponent<Player2Health>();
+        // script = GameObject.Find("Player2").GetComponent<Player2Health>();
     }
 
     // Update is called once per frame
@@ -27,15 +25,21 @@ public class PlayerAttack : MonoBehaviour
         if (timeBtwAttack <= 0)
         {
             //then you can attack
-            if (Input.GetKey(KeyCode.E))
+            if (Input.GetKey(KeyCode.J))
             {
                 playerAnim.SetTrigger("Attack");
                 // Array stores all enemies found inside the circle hit
-                Collider2D[] enemiesFound = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
+                Collider2D[] enemiesFound = Physics2D.OverlapCircleAll(attackPos.position, attackRange);
 
                 for (int i = 0; i < enemiesFound.Length; i++) {
-                    enemiesFound[i].GetComponent<Player2Health>().TakeDamage(damage);
+                    if (enemiesFound[i].CompareTag("Enemy"))
+                    {
+                        enemiesFound[i].GetComponent<EnemyScript>().Die();
+                    }
+                    // change this to .TakeDamage(damage); in the future if i have time to give underenemy health
+                    //enemiesFound[i].GetComponent<EnemyScript>().Die();
 
+                    /*
                     if (transform.position.x > player2.position.x) {
                         // if player hits player 2 who is to the left
                         player2rb.velocity = new Vector3(-(script.damageTaken), player2rb.velocity.y);
@@ -43,6 +47,7 @@ public class PlayerAttack : MonoBehaviour
                         // if player hits player 2 who is to the right
                         player2rb.velocity = new Vector3(script.damageTaken, player2rb.velocity.y);
                     }
+                    */
                 }
             }
             timeBtwAttack = startTimeBtwAttack;

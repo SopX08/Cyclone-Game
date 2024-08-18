@@ -5,6 +5,7 @@ using UnityEngine;
 public class PromptScript : MonoBehaviour
 {
     public GameObject Prompt;
+    public MoveScript moveScript; // reference to MoveScript
     
     /*public GameObject Prompt2;
     public GameObject Prompt3;
@@ -12,11 +13,26 @@ public class PromptScript : MonoBehaviour
     public GameObject Prompt5;
     */
 
+    void Start()
+    {
+        if (moveScript == null)
+        {
+            moveScript = GameObject.FindGameObjectWithTag("Player").GetComponent<MoveScript>();
+        }
+    }
+
     public void ClosePrompt()
     {
         if (Prompt!=null)
         {
             Prompt.SetActive(false);
+        }
+        if (moveScript != null)
+        {
+            moveScript.zeroVelocity = false;
+        }   else
+        {
+            Debug.LogWarning("MoveScript reference is missing.");
         }
     }
     /*
